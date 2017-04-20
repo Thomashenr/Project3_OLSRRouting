@@ -143,13 +143,14 @@ class Node extends JFrame {
          for(int z = 0; z < 15; z++) {
             if (allNodes[y] != null) {
                if(allNodes[y].nodesConnected[z] != null) {
-                  System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
+                  //System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
                }
             }
          }
       }
    
    }
+   
    public boolean gremlinFunctionManet(int distance) { //PacketRateDrop function
       Random randSend = new Random();
       int gremlin = randSend.nextInt(100) + 1;
@@ -164,6 +165,17 @@ class Node extends JFrame {
          return false;
       }
       
+   }
+   public boolean inRangeSimulate(int distance) {
+	   if (distance > 100) {
+		   return true;
+	   }
+	   if (distance == 0) {
+		   return true;
+	   }
+	   else {
+		   return false;
+	   }
    }
 }
 
@@ -184,6 +196,7 @@ public class OLSR extends Node {
    public static String[][] cache_table=new String[10][10];
    public static int z1=0;
    public static int new_z1=0;
+   public static int noden = 0;
 
 
    public static void main(String[] args) throws InterruptedException, IOException {
@@ -196,7 +209,7 @@ public class OLSR extends Node {
    	//UDP_MANET client=new UDP_MANET();
       Scanner s = new Scanner(System.in);
       System.out.println("Enter Node : ");
-      int noden=s.nextInt();
+      noden=s.nextInt();
    	
       cache_table[0][0]="source_addr";
       cache_table[0][1]="-1";
@@ -219,14 +232,18 @@ public class OLSR extends Node {
 		{
 			System.exit(0);
 		}
-
-
       //dynamic node checking
       System.out.println("Current Port : "+node.allNodes[d_nodeindex].portNumber);
       int port = Integer.parseInt(node.allNodes[d_nodeindex].portNumber);
 	   
 
       socket = new DatagramSocket(port);
+      
+      //start hello thread for updating table
+      
+	  Thread hello = new Thread(new helloSend());
+	  hello.start();
+      //end hello thread for updating table
    
       while(true){
       
@@ -261,7 +278,7 @@ public class OLSR extends Node {
             String r_p_server = new String(packet.getData());
             System.out.println("Data: " + r_p_server);
             String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("PN")).trim();
-	    System.out.println("Source: " + source_addr);
+	        System.out.println("Source: " + source_addr);
             String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("SR")).trim();
          	
             int i1=r_p_server.indexOf("P");
@@ -379,10 +396,10 @@ public class OLSR extends Node {
                      
                      boolean result = node.gremlinFunctionManet(node.allNodes[d_nodeindex].distances[d_attachnodeindex]);
                      if (!result) {
-						 System.out.println("Packet dropped due to weak signal");
+						 System.out.println("Target out of range.");
 					 }
 					 else {
-						System.out.println("Not dropped");
+						System.out.println("Target in range, sending..");
 						socket.send(packetSend);
                   	 
 					 }
@@ -398,4 +415,36 @@ public class OLSR extends Node {
          }
       }
    }
+
+   	public static class helloSend implements Runnable {
+		public void run() {
+			System.out.println("Started Hello Thread!");
+			
+			while (true) {
+				try {
+					Thread.sleep(1000); // pause
+				}
+				catch(InterruptedException ex) {
+					System.out.println(ex.getMessage());
+				}
+				System.out.println("\nSending Hello!");
+				
+				boolean result = true;
+				for (int i = 0; i < node.allNodes.length; i++) {
+					log("Distance: " + node.allNodes[noden].distances[i]);
+					boolean canSend = node.inRangeSimulate(node.allNodes[noden].distances[i]);
+				
+					if (canSend) {
+						System.out.println("Target out of range.");
+					}
+					else {
+						System.out.println("Target in range, sending..");
+					}
+				}
+			}
+		}
+		public void log(String stringIn) {
+			System.out.println(stringIn);
+		}
+	}
 }
