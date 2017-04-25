@@ -10,7 +10,11 @@ public class Config { //Class that alters config file
    public int machineNum; // Number of machines being used  
    public int port = 10164; //Port Number to start with
    public int changes = 0;
-   public int valuex, valuey; //Locations x and y coordinated
+   public int xvalue[];
+   public int yvalue[]; 
+   public int valuex = 0;
+   public int valuy = 0; //Locations x and y coordinated
+   public int totalNodes = 0;
    
    public void startUp() { //Method that prompts user for number of machines, machine names and nodes on machine to write to config file
       System.out.print("How many machines will be used in this program? ");
@@ -30,22 +34,25 @@ public class Config { //Class that alters config file
             System.exit(1);
          }
          nodesOnMachine[i] = machineNodes;
+         totalNodes = totalNodes + machineNodes;
       } 
+      xvalue = new int[totalNodes];
+      yvalue = new int[totalNodes];
         
    }
-   public String changeLocation() { //Method that randomly changes the x and y coordinates
+   public String changeLocation(int x) { //Method that randomly changes the x and y coordinates
       Random rand = new Random();
       int resulty = rand.nextInt(3) - 2;
       int resultx = rand.nextInt(3) - 2;
-      valuex = valuex + resultx;
-      valuey = valuey + resulty; 
-      return (String.valueOf(valuex) + " " + String.valueOf(valuey));
+      xvalue[x] = xvalue[x] + resultx;
+      yvalue[x] = yvalue[x] + resulty; 
+      return (String.valueOf(xvalue[x]) + " " + String.valueOf(yvalue[x]));
    }
-   public String generateLocation() {
+   public String generateLocation(int x) {
       Random rand = new Random();
-      valuex = rand.nextInt(300) + 2;
-      valuey = rand.nextInt(300) + 2;
-      return (String.valueOf(valuex) + " " + String.valueOf(valuey));
+      xvalue[x] = rand.nextInt(300) + 2;
+      yvalue[x] = rand.nextInt(300) + 2; 
+      return (String.valueOf(xvalue[x]) + " " + String.valueOf(yvalue[x]));
    }
    
    public void writeToFile(FileWriter file, BufferedWriter buffer) { //Method for original writing to file with data and original location
@@ -55,10 +62,10 @@ public class Config { //Class that alters config file
             port = 10164;
             for(int x = 1; x <= nodesOnMachine[i]; x++){
                if (changes == 0) {
-                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + generateLocation() + "\n");
+                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + generateLocation(x-1) + "\n");
                }
                else {
-                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation() + "\n");
+                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1) + "\n");
                }
                port++;
                nodeNum++;

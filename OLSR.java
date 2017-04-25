@@ -35,10 +35,10 @@ class Node extends JFrame {
 
    public Node(String nodeIn) { //Constructor for nodes
       name = nodeIn;
-      attachedNodes = new int[15];
-      distances = new int[15];
-      nodesConnected = new Node[15];
-      for (int i = 0; i < 15; i++) {
+      attachedNodes = new int[20];
+      distances = new int[20];
+      nodesConnected = new Node[20];
+      for (int i = 0; i < 20; i++) {
          attachNewNode(0, i);
       }
    }
@@ -64,7 +64,7 @@ class Node extends JFrame {
    }
 
    public void linkNodes(String configFile) {  //Links nodes appropriately
-      allNodes = new Node[15];
+      allNodes = new Node[20];
       String link;
       Node current;
       file = new File(configFile); // Instance of file
@@ -75,6 +75,9 @@ class Node extends JFrame {
          int added = 0;
          int i = 0; 
          while ((line = buffer.readLine()) != null) { // Iterates through file line by line
+            if (line.indexOf(" ") < 0) {
+               break;
+            }
             Node currentNode = new Node(""); // Instance of Node class
             int index = line.indexOf(" ");
             currentNode.setNodeName(line.substring(0, index));
@@ -85,39 +88,14 @@ class Node extends JFrame {
             index = line.indexOf(" ");
             currentNode.portNumber = line.substring(0, index);
             line = line.replace(currentNode.portNumber + " ", "");
-            index = line.indexOf("links ");
-            currentNode.location = line.substring(0, index);
-            line = line.replace(currentNode.location + "links ", "");  
-            for(int x = 0; x <= 12; x++) { // loop to attach links
-               if((index = line.indexOf(" ")) > 0) {
-                  String linkNode =  line.substring(0, index);
-                  line = line.replace(linkNode + " ", "");
-                  currentNode.attachNewNode(Integer.parseInt(linkNode), x);  
-               }
-               else if(line.compareTo("") == 0) {
-                  break;
-               }
-               else {
-                  currentNode.attachNewNode(Integer.parseInt(line), x);   
-                  line = line.replace(line, "");
-               }
-            }
-            index = currentNode.location.indexOf(" "); // Gets the location and seperates them via x and y
-            currentNode.x = Integer.parseInt(currentNode.location.substring(0, index));
-            currentNode.location = currentNode.location.replaceFirst(currentNode.location.substring(0, index + 1), "");
-            index = currentNode.location.indexOf(" ");
-            currentNode.y = Integer.parseInt(currentNode.location.substring(0, index));
+            System.out.println(line);
+            index = line.indexOf(" ");
+            currentNode.x = Integer.parseInt(line.substring(0, index));
+            line = line.replace(line.substring(0, index) + " ", "");  
+            currentNode.y = Integer.parseInt(line.substring(0, index));;
             allNodes[i] = currentNode; 
             i++;
          }
-      	// for (int y = 0; y < 4; y++) {
-      	// System.out.print(allNodes[y].getNodeName() + " ");
-      	// System.out.print(allNodes[y].machine + " " + allNodes[y].portNumber + " " + allNodes[y].location + " links: ");
-      	// for(int z = 0; z < 4; z++) {
-      	// System.out.print(allNodes[y].attachedNodes[z] + " ");
-      	// }
-      	// System.out.println("");
-      	// }
       }
       catch (FileNotFoundException e) {
          e.printStackTrace();
@@ -125,7 +103,7 @@ class Node extends JFrame {
       catch (IOException e) {
          e.printStackTrace();
       }
-      for (int b = 0; b < 15; b++) { //Calculates the distance between Nodes
+      for (int b = 0; b < 20; b++) { //Calculates the distance between Nodes
          if(allNodes[b] != null) {
             for(int q = 0; q < 4; q++) {
                allNodes[b].distances[q] = ((int)Math.sqrt((Math.pow(Math.abs(allNodes[b].x - allNodes[q].x), 2) + Math.pow(Math.abs(allNodes[b].y - allNodes[q].y), 2))));   
@@ -139,11 +117,11 @@ class Node extends JFrame {
          }
       }
       
-      for(int y = 0; y < 15; y++) {
-         for(int z = 0; z < 15; z++) {
+      for(int y = 0; y < 20; y++) {
+         for(int z = 0; z < 20; z++) {
             if (allNodes[y] != null) {
                if(allNodes[y].nodesConnected[z] != null) {
-                  //System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
+                  System.out.println(allNodes[y].getNodeName() + " Connected to: " +  allNodes[y].nodesConnected[z].getNodeName() + " Distance: " + allNodes[y].distances[z]);
                }
             }
          }
@@ -167,15 +145,15 @@ class Node extends JFrame {
       
    }
    public boolean inRangeSimulate(int distance) {
-	   if (distance > 100) {
-		   return true;
-	   }
-	   if (distance == 0) {
-		   return true;
-	   }
-	   else {
-		   return false;
-	   }
+      if (distance > 100) {
+         return true;
+      }
+      if (distance == 0) {
+         return true;
+      }
+      else {
+         return false;
+      }
    }
 }
 
@@ -219,30 +197,30 @@ public class OLSR extends Node {
       int d_nodeindex=-1;
       for(int s1=0;s1<node.allNodes.length;s1++)
       {
-	if(node.allNodes[s1]!=null)
-	{
-	if(node.allNodes[s1].getNodeName().equals(d_nodename))
-	{
-		d_nodeindex=s1;
-		break;
-	}
-	}
+         if(node.allNodes[s1]!=null)
+         {
+            if(node.allNodes[s1].getNodeName().equals(d_nodename))
+            {
+               d_nodeindex=s1;
+               break;
+            }
+         }
       }
-	if(d_nodeindex==-1)
-		{
-			System.exit(0);
-		}
+      if(d_nodeindex==-1)
+      {
+         System.exit(0);
+      }
       //dynamic node checking
       System.out.println("Current Port : "+node.allNodes[d_nodeindex].portNumber);
       int port = Integer.parseInt(node.allNodes[d_nodeindex].portNumber);
-	   
-
+      
+   
       socket = new DatagramSocket(port);
       
       //start hello thread for updating table
       
-	  Thread hello = new Thread(new helloSend());
-	  hello.start();
+      Thread hello = new Thread(new helloSend());
+      hello.start();
       //end hello thread for updating table
    
       while(true){
@@ -254,22 +232,22 @@ public class OLSR extends Node {
                originalTimeStamp = node.checkFileModification();
                node.linkNodes(fileName);
             }
-		d_nodeindex=-1;
-      		for(int s1=0;s1<node.allNodes.length;s1++)
-      		{
-			if(node.allNodes[s1]!=null)
-			{
-			if(node.allNodes[s1].getNodeName().equals(d_nodename))
-			{
-				d_nodeindex=s1;
-				break;
-			}
-			}
-      		}
-		if(d_nodeindex==-1)
-		{
-			System.exit(0);
-		}
+            d_nodeindex=-1;
+            for(int s1=0;s1<node.allNodes.length;s1++)
+            {
+               if(node.allNodes[s1]!=null)
+               {
+                  if(node.allNodes[s1].getNodeName().equals(d_nodename))
+                  {
+                     d_nodeindex=s1;
+                     break;
+                  }
+               }
+            }
+            if(d_nodeindex==-1)
+            {
+               System.exit(0);
+            }
          
             byte buff1[] = new byte[128];
             DatagramPacket packet = new DatagramPacket(buff1,buff1.length);
@@ -278,7 +256,7 @@ public class OLSR extends Node {
             String r_p_server = new String(packet.getData());
             System.out.println("Data: " + r_p_server);
             String source_addr=r_p_server.substring(r_p_server.indexOf("SR")+2,r_p_server.indexOf("PN")).trim();
-	        System.out.println("Source: " + source_addr);
+            System.out.println("Source: " + source_addr);
             String dest_addr=r_p_server.substring(r_p_server.indexOf("DR")+2,r_p_server.indexOf("SR")).trim();
          	
             int i1=r_p_server.indexOf("P");
@@ -304,7 +282,7 @@ public class OLSR extends Node {
          	
             if(j1==0)
             {
-	       int index = r_p_server.indexOf("DR");
+               int index = r_p_server.indexOf("DR");
                packetNum = r_p_server.substring(i1 + 1, index);
                System.out.println("Packet Number: " + packetNum );
             }
@@ -319,26 +297,26 @@ public class OLSR extends Node {
          
             int test = Integer.parseInt(packetNum);
             int test2 = Integer.parseInt(cache_table[0][1]);
-           if(r_p_server.contains("Z"))
-           {
-			    int z2 = r_p_server.indexOf("Z");
-				new_z1=Integer.parseInt(r_p_server.substring(0,z2));
-		   }
-		   else
-		   {
-			   z1=0;
-			   new_z1=0;
-		   }
+            if(r_p_server.contains("Z"))
+            {
+               int z2 = r_p_server.indexOf("Z");
+               new_z1=Integer.parseInt(r_p_server.substring(0,z2));
+            }
+            else
+            {
+               z1=0;
+               new_z1=0;
+            }
            
             if(Integer.parseInt(packetNum) > Integer.parseInt(cache_table[0][1]) || (new_z1 > z1 && r_p_server.contains("Z")))
             {
-				z1=new_z1;
-				if(!r_p_server.contains("A"))
-				{
-					cache_table[0][1]=packetNum;
-				}
-				
-				
+               z1=new_z1;
+               if(!r_p_server.contains("A"))
+               {
+                  cache_table[0][1]=packetNum;
+               }
+            
+            
                
                System.out.println("-----");
                previous_node = r_p_server.substring(r_p_server.indexOf("PN")+2).trim();
@@ -346,66 +324,66 @@ public class OLSR extends Node {
                r_p_server = r_p_server.substring(0, r_p_server.indexOf("PN"));
                r_p_server = r_p_server.trim() +"PN"+(noden);
             
-               for(int i=0;i<15;i++)
+               for(int i=0;i<20;i++)
                {
- 		 if(node.allNodes[d_nodeindex].getAttachedNode(i)==0)
+                  if(node.allNodes[d_nodeindex].getAttachedNode(i)==0)
                   {
                      break;
                   }
-
-		int d_attachnodeindex=-1;
-		for(int s1=0;s1<node.allNodes.length;s1++)
-      		{
-			if(node.allNodes[s1]!=null)
-			{
-			
-			if(node.allNodes[s1].getNodeName().equals("Node"+node.allNodes[d_nodeindex].getAttachedNode(i)))
-			{
-				System.out.println(node.allNodes[s1].getNodeName());
-				d_attachnodeindex=s1;
-				break;
-			}
-
-			}
-			
-
-      		}
-
-		System.out.println(d_attachnodeindex);
-		if(d_attachnodeindex!=-1)
-		{
-                  int an= node.allNodes[d_nodeindex].getAttachedNode(i);
                
-               
-                 
-                 if (node.allNodes[d_nodeindex].distances[d_attachnodeindex]<100)
-		{
-			
-                  if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden && Integer.parseInt(source_addr)!=an) 
+                  int d_attachnodeindex=-1;
+                  for(int s1=0;s1<node.allNodes.length;s1++)
                   {
-                     int an_port = Integer.parseInt(node.allNodes[d_attachnodeindex].portNumber);
-                  	//Thread.sleep(1000); //pause for readability
-                     System.out.println("r_p_server : "+r_p_server);
-                     System.out.println("Forwarding from port :"+port+"to :"+an_port);
-                     byte buff[]=r_p_server.getBytes();
-                  	//System.out.println("buffer length"+buff.length);
-                   //  InetAddress addressT = InetAddress.getLocalHost();
-                     InetAddress addressT = InetAddress.getByName(node.allNodes[d_attachnodeindex].machine + ".eng.auburn.edu");
-					 System.out.println(node.allNodes[d_attachnodeindex].machine);
-                     DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
+                     if(node.allNodes[s1]!=null)
+                     {
                      
-                     boolean result = node.gremlinFunctionManet(node.allNodes[d_nodeindex].distances[d_attachnodeindex]);
-                     if (!result) {
-						 System.out.println("Target out of range.");
-					 }
-					 else {
-						System.out.println("Target in range, sending..");
-						socket.send(packetSend);
-                  	 
-					 }
+                        if(node.allNodes[s1].getNodeName().equals("Node"+node.allNodes[d_nodeindex].getAttachedNode(i)))
+                        {
+                           System.out.println(node.allNodes[s1].getNodeName());
+                           d_attachnodeindex=s1;
+                           break;
+                        }
+                     
                      }
-		}
-	     }
+                  
+                  
+                  }
+               
+                  System.out.println(d_attachnodeindex);
+                  if(d_attachnodeindex!=-1)
+                  {
+                     int an= node.allNodes[d_nodeindex].getAttachedNode(i);
+                  
+                  
+                  
+                     if (node.allNodes[d_nodeindex].distances[d_attachnodeindex]<100)
+                     {
+                     
+                        if(Integer.parseInt(previous_node)!=an && Integer.parseInt(source_addr)!=noden && Integer.parseInt(source_addr)!=an) 
+                        {
+                           int an_port = Integer.parseInt(node.allNodes[d_attachnodeindex].portNumber);
+                        //Thread.sleep(1000); //pause for readability
+                           System.out.println("r_p_server : "+r_p_server);
+                           System.out.println("Forwarding from port :"+port+"to :"+an_port);
+                           byte buff[]=r_p_server.getBytes();
+                        //System.out.println("buffer length"+buff.length);
+                        //  InetAddress addressT = InetAddress.getLocalHost();
+                           InetAddress addressT = InetAddress.getByName(node.allNodes[d_attachnodeindex].machine + ".eng.auburn.edu");
+                           System.out.println(node.allNodes[d_attachnodeindex].machine);
+                           DatagramPacket packetSend = new DatagramPacket(buff, buff.length, addressT, an_port);
+                        
+                           boolean result = node.gremlinFunctionManet(node.allNodes[d_nodeindex].distances[d_attachnodeindex]);
+                           if (!result) {
+                              System.out.println("Target out of range.");
+                           }
+                           else {
+                              System.out.println("Target in range, sending..");
+                              socket.send(packetSend);
+                           
+                           }
+                        }
+                     }
+                  }
                }
             }
          }
@@ -416,35 +394,35 @@ public class OLSR extends Node {
       }
    }
 
-   	public static class helloSend implements Runnable {
-		public void run() {
-			System.out.println("Started Hello Thread!");
-			
-			while (true) {
-				try {
-					Thread.sleep(1000); // pause
-				}
-				catch(InterruptedException ex) {
-					System.out.println(ex.getMessage());
-				}
-				System.out.println("\nSending Hello!");
-				
-				boolean result = true;
-				for (int i = 0; i < node.allNodes.length; i++) {
-					log("Distance: " + node.allNodes[noden].distances[i]);
-					boolean canSend = node.inRangeSimulate(node.allNodes[noden].distances[i]);
-				
-					if (canSend) {
-						System.out.println("Target out of range.");
-					}
-					else {
-						System.out.println("Target in range, sending..");
-					}
-				}
-			}
-		}
-		public void log(String stringIn) {
-			System.out.println(stringIn);
-		}
-	}
+   public static class helloSend implements Runnable {
+      public void run() {
+         System.out.println("Started Hello Thread!");
+      	
+         while (true) {
+            try {
+               Thread.sleep(1000); // pause
+            }
+            catch(InterruptedException ex) {
+               System.out.println(ex.getMessage());
+            }
+            System.out.println("\nSending Hello!");
+         	
+            boolean result = true;
+            for (int i = 0; i < node.allNodes.length; i++) {
+               log("Distance: " + node.allNodes[noden].distances[i]);
+               boolean canSend = node.inRangeSimulate(node.allNodes[noden].distances[i]);
+            
+               if (canSend) {
+                  System.out.println("Target out of range.");
+               }
+               else {
+                  System.out.println("Target in range, sending..");
+               }
+            }
+         }
+      }
+      public void log(String stringIn) {
+         System.out.println(stringIn);
+      }
+   }
 }
