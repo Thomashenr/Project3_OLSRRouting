@@ -42,10 +42,22 @@ public class Config { //Class that alters config file
    }
    public String changeLocation(int x) { //Method that randomly changes the x and y coordinates
       Random rand = new Random();
-      int resulty = rand.nextInt(3) - 2;
-      int resultx = rand.nextInt(3) - 2;
+      int resulty = rand.nextInt(3) - 1;
+      int resultx = rand.nextInt(3) - 1;
       xvalue[x] = xvalue[x] + resultx;
-      yvalue[x] = yvalue[x] + resulty; 
+      yvalue[x] = yvalue[x] + resulty;
+      if (xvalue[x] < 0) {
+    	  xvalue[x] = 0;
+      }
+      if (xvalue[x] > 300) {
+    	  xvalue[x] = 300;
+      }
+      if (yvalue[x] < 0) {
+    	  yvalue[x] = 0;
+      }
+      if (yvalue[x] > 300) {
+    	  yvalue[x] = 300;
+      }
       return (String.valueOf(xvalue[x]) + " " + String.valueOf(yvalue[x]));
    }
    public String generateLocation(int x) {
@@ -65,7 +77,14 @@ public class Config { //Class that alters config file
                   buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + generateLocation(x-1) + "\n");
                }
                else {
-                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1) + "\n");
+            	   //if NOT last node
+            	   if (x != nodesOnMachine[machineNum - 1]) {
+                       buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1) + "\n");
+            	   }
+            	   //if IS last node
+            	   else {
+                       buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1));
+            	   }
                }
                port++;
                nodeNum++;
@@ -89,7 +108,7 @@ public class Config { //Class that alters config file
             run.writeToFile(file, buffer);
             buffer.close();
             file.close();
-            run.changes++;
+            run.changes++;  
          } 
          catch(IOException e) {
             e.printStackTrace();

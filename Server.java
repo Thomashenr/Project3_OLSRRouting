@@ -15,9 +15,9 @@ public class Server extends JFrame {
 	public static void main(String[] args) throws InterruptedException {
 
 		Server server = new Server();
-		 Scanner s = new Scanner(System.in);
-		 System.out.println("Enter Current Node of Server : ");
-		 user_input_c_node=s.nextInt();
+//		 Scanner s = new Scanner(System.in);
+//		 System.out.println("Enter Current Node of Server : ");
+//		 user_input_c_node=s.nextInt();
 		System.out.println("Ready to receive");
 		server.readyToReceivPacket();
 	}
