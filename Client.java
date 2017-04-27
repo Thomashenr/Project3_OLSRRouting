@@ -213,7 +213,8 @@ public class Client extends JFrame {
 			//InetAddress addressT = InetAddress.getByAddress(ipAddr);
 			
 			//HARD CODE to machine name of 2nd node
-			InetAddress addressT = InetAddress.getByName("tux204.eng.auburn.edu");
+//			InetAddress addressT = InetAddress.getByName("tux204.eng.auburn.edu");
+			InetAddress addressT = InetAddress.getLocalHost();
 			
 			
 			
@@ -239,7 +240,8 @@ public class Client extends JFrame {
 		try {
 			byte buff[] = msg.getBytes();
 			byte[] ipAddr = new byte[] { (byte) ip1, (byte) ip2, (byte) ip3, (byte) ip4 };
-			InetAddress addressT = InetAddress.getByAddress(ipAddr);
+//			InetAddress addressT = InetAddress.getByAddress(ipAddr);
+			InetAddress addressT = InetAddress.getLocalHost();
 			//addressT = InetAddress.getByName("tux201.eng.auburn.edu");
 			// gremlin function to determine if the packet is dropped
 			boolean gremlin = gremlinFunctionEthernet();
