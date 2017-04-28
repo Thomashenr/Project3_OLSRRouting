@@ -74,16 +74,19 @@ public class Config { //Class that alters config file
             port = 10164;
             for(int x = 1; x <= nodesOnMachine[i]; x++){
                if (changes == 0) {
-                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + generateLocation(x-1) + "\n");
-               }
-               else {
-            	   //if NOT last node
-            	   if (x != nodesOnMachine[machineNum - 1]) {
+                  buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + generateLocation(x-1) + "\n"); 
+               } 
+               else { 
+            	   if (i == 0 && x == 1) {  
+                       buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " 0 0\n");
+            	   }
+            	   //if NOT last node 
+            	   else if (x != nodesOnMachine[machineNum - 1]) {
                        buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1) + "\n");
             	   }
             	   //if IS last node
             	   else {
-                       buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " " + changeLocation(x-1));
+                       buffer.write("Node" + nodeNum + " " + machines[i] + " " + port + " 300 300");
             	   }
                }
                port++;

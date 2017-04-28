@@ -88,7 +88,7 @@ public class Server extends JFrame {
 		
 		try {
 			//socket # here should be the port# of the last node in configuration file
-			socket = new DatagramSocket(10169);
+			socket = new DatagramSocket(10168);
 		} catch (SocketException ex) {
 			System.out.println("failed to setup socket!");
 			System.exit(1);
@@ -165,7 +165,7 @@ public class Server extends JFrame {
 						} else {
 							packetNum = r_p_client.substring((i + 1), j).trim();
 						}
-						showMsg("Packet Number: " + packetNum);
+						showMsg("\nPacket Number: " + packetNum);
 						checkPacket = Integer.parseInt(packetNum);
 						packetNumber = Integer.parseInt(packetNum);
 

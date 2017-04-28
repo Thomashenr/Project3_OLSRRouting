@@ -145,7 +145,7 @@ public class Client extends JFrame {
 			}
 			if (newData) {
 				// saving old message in case we need to retransmit
-				msg = msg.trim() + "DR7" + "SR1" + "PN1";
+				msg = msg.trim() + "DR" + (user_input_d_node - 1) + "SR1" + "PN1";
 				old_msg = msg;
 				// sending packet
 				
@@ -298,7 +298,7 @@ public class Client extends JFrame {
 					DatagramPacket packet = new DatagramPacket(buff1, buff1.length);
 					counter = 1;
 
-					socket.setSoTimeout(40); // set timeout for if a packet is
+					socket.setSoTimeout(500); // set timeout for if a packet is
 												// lost
 					socket.receive(packet);
 					counter1=0;
